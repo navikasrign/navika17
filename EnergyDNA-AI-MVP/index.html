@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnergyDNA AI — MSME Predictive Maintenance MVP</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="bolt">⚡</span><span>EnergyDNA AI</span></div>
+    <span class="badge">Hackathon MVP · Software Prototype</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ENERGY · AI · PREDICTIVE MAINTENANCE</p>
+        <h1>Every machine has an <span>energy signature.</span></h1>
+        <p class="lead">A smartphone-first AI concept for MSMEs that learns machine behaviour from sound, images and operating context to flag abnormalities before they become expensive failures.</p>
+        <div class="hero-actions">
+          <a href="#analyze" class="btn primary">Analyze a Machine</a>
+          <a href="#workflow" class="btn secondary">See How It Works</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="machine-visual">⚙️</div>
+        <div class="pulse"></div>
+        <p>Machine Energy DNA</p>
+        <strong>Normal signature → deviation → action</strong>
+      </div>
+    </section>
+
+    <section class="stats">
+      <article><strong>Smartphone-first</strong><span>Lower entry barrier</span></article>
+      <article><strong>Audio + Image</strong><span>Multimodal inspection</span></article>
+      <article><strong>EnergyDNA Score</strong><span>Simple machine health view</span></article>
+      <article><strong>Actionable Alerts</strong><span>Maintenance guidance</span></article>
+    </section>
+
+    <section id="analyze" class="panel two-col">
+      <div>
+        <p class="eyebrow">LIVE MVP DEMO</p>
+        <h2>Create a machine scan</h2>
+        <p class="muted">Upload a short machine audio recording. The browser extracts simple audio features and creates a prototype EnergyDNA health result. Image upload is included for inspection workflow demonstration.</p>
+
+        <label>Machine name</label>
+        <input id="machineName" type="text" value="CNC Motor 01" placeholder="e.g., CNC Motor 01" />
+
+        <label>Machine type</label>
+        <select id="machineType">
+          <option>Electric Motor</option>
+          <option>CNC Machine</option>
+          <option>Textile Machine</option>
+          <option>Compressor</option>
+          <option>Pump</option>
+          <option>Other</option>
+        </select>
+
+        <label>Machine audio</label>
+        <input id="audioFile" type="file" accept="audio/*" />
+        <small>Tip: a 3–10 second WAV/MP3 recording works best for this prototype.</small>
+
+        <label>Machine image (optional)</label>
+        <input id="imageFile" type="file" accept="image/*" />
+        <div id="imagePreview" class="image-preview">No image selected</div>
+
+        <label>Operating condition</label>
+        <select id="condition">
+          <option value="normal">Appears normal</option>
+          <option value="noisy">Unusual noise/vibration noticed</option>
+          <option value="hot">Running hotter than usual</option>
+          <option value="maintenance">Recently maintained</option>
+        </select>
+
+        <button id="analyzeBtn" class="btn primary full">Run EnergyDNA Analysis</button>
+        <p class="disclaimer">Prototype note: this MVP does not measure exact kWh from a phone. It demonstrates anomaly screening using audio features and operating context. Precise energy measurement can later use smart meters/IoT data.</p>
+      </div>
+
+      <div class="result-card" id="resultCard">
+        <div class="result-header">
+          <div>
+            <p class="eyebrow">ENERGYDNA RESULT</p>
+            <h2 id="resultMachine">Waiting for scan</h2>
+          </div>
+          <div id="scoreRing" class="score-ring"><span id="scoreValue">--</span><small>/100</small></div>
+        </div>
+
+        <div class="status-row">
+          <span>Status</span><strong id="statusText" class="status neutral">Not analyzed</strong>
+        </div>
+        <div class="metric"><span>Audio RMS</span><b id="rmsValue">—</b></div>
+        <div class="metric"><span>Zero-crossing rate</span><b id="zcrValue">—</b></div>
+        <div class="metric"><span>Estimated anomaly level</span><b id="anomalyValue">—</b></div>
+        <div class="metric"><span>Maintenance priority</span><b id="priorityValue">—</b></div>
+
+        <div class="recommendation">
+          <h3>AI-style Recommendation</h3>
+          <p id="recommendationText">Upload machine audio and run the analysis to generate a recommendation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow" class="section">
+      <p class="eyebrow">HOW IT WORKS</p>
+      <h2>From raw signal to shop-floor decision</h2>
+      <div class="workflow">
+        <article><span>1</span><h3>Collect</h3><p>Phone sound, image and operating context</p></article>
+        <article><span>2</span><h3>Analyze</h3><p>Audio features + visual/operating inputs</p></article>
+        <article><span>3</span><h3>Learn</h3><p>Build machine-specific Energy DNA baseline</p></article>
+        <article><span>4</span><h3>Detect</h3><p>Identify abnormal behaviour and risk</p></article>
+        <article><span>5</span><h3>Recommend</h3><p>Suggest inspection and maintenance action</p></article>
+      </div>
+    </section>
+
+    <section class="section impact">
+      <div>
+        <p class="eyebrow">EXPECTED IMPACT</p>
+        <h2>Built for practical MSME value</h2>
+      </div>
+      <div class="impact-grid">
+        <article><h3>Economic</h3><p>Potentially reduce avoidable energy and maintenance costs.</p></article>
+        <article><h3>Operational</h3><p>Support earlier intervention and reduce unexpected downtime.</p></article>
+        <article><h3>Environmental</h3><p>Help identify inefficient operation and reduce avoidable energy waste.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>EnergyDNA AI</strong> · Detect. Predict. Optimize. Save.<br />
+    <small>Hackathon prototype — results are screening indicators, not certified industrial diagnostics.</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
