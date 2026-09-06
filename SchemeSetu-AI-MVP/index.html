@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SchemeSetu AI MVP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>SchemeSetu AI</h1>
+      <p>From Scheme Discovery to Application Readiness</p>
+    </div>
+    <span class="badge">SIH26092 • Team INNOVEXA</span>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <div>
+        <span class="eyebrow">AI-assisted opportunity access</span>
+        <h2>Find the right scheme. Fix gaps. Become application-ready.</h2>
+        <p>This MVP demonstrates explainable scheme matching, document readiness, Indic-style name variation checks, DPR drafting, benefit compatibility and an application readiness score.</p>
+      </div>
+      <div class="hero-score">
+        <div class="ring" id="heroScore">0%</div>
+        <small>Application Readiness</small>
+      </div>
+    </section>
+
+    <nav class="steps">
+      <button class="step active" data-target="profile">1. Profile</button>
+      <button class="step" data-target="eligibility">2. Match</button>
+      <button class="step" data-target="documents">3. Verify</button>
+      <button class="step" data-target="assistance">4. Prepare</button>
+    </nav>
+
+    <section id="profile" class="panel card active-panel">
+      <div class="section-head">
+        <div><span class="eyebrow">Stage 1</span><h3>Profile Intelligence</h3></div>
+        <span class="pill">Voice/Form Ready</span>
+      </div>
+      <div class="grid two">
+        <label>Name<input id="name" value="Lakshmi Raj" /></label>
+        <label>Gender<select id="gender"><option>Female</option><option>Male</option><option>Other</option></select></label>
+        <label>Category<select id="category"><option>SC</option><option>ST</option><option>OBC</option><option>General</option></select></label>
+        <label>State<select id="state"><option>Tamil Nadu</option><option>Karnataka</option><option>Kerala</option><option>Other</option></select></label>
+        <label>Business Type<select id="business"><option>Tailoring</option><option>Food Processing</option><option>Retail</option><option>Services</option></select></label>
+        <label>Business Stage<select id="stage"><option>New</option><option>Existing</option></select></label>
+        <label>Annual Income (₹)<input id="income" type="number" value="200000" /></label>
+        <label>Funding Required (₹)<input id="funding" type="number" value="500000" /></label>
+      </div>
+      <div class="actions"><button class="primary" id="findSchemes">Find Matching Schemes →</button></div>
+    </section>
+
+    <section id="eligibility" class="panel card">
+      <div class="section-head">
+        <div><span class="eyebrow">Stage 2</span><h3>Eligibility Engine</h3></div>
+        <span class="pill">Rules validate → AI explains</span>
+      </div>
+      <div id="schemeResults" class="scheme-list"></div>
+      <div class="info-box"><strong>Why this is explainable:</strong> hard eligibility conditions are evaluated as rules. The score only ranks already-relevant options in this MVP.</div>
+    </section>
+
+    <section id="documents" class="panel card">
+      <div class="section-head">
+        <div><span class="eyebrow">Stage 3</span><h3>Document Intelligence</h3></div>
+        <span class="pill">OCR demo + verification</span>
+      </div>
+      <div class="grid two">
+        <div>
+          <h4>Document Readiness</h4>
+          <div class="checklist" id="docChecklist"></div>
+        </div>
+        <div>
+          <h4>Name Consistency Check</h4>
+          <label>Aadhaar / Primary Name<input id="primaryName" value="Lakshmi Raj" /></label>
+          <label>Certificate Name<input id="certificateName" value="Laxmi Raj" /></label>
+          <button class="secondary" id="checkName">Check Similarity</button>
+          <div id="nameResult" class="result-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="assistance" class="panel card">
+      <div class="section-head">
+        <div><span class="eyebrow">Stage 4</span><h3>Application Assistance</h3></div>
+        <span class="pill">DPR • Compatibility • Readiness</span>
+      </div>
+      <div class="grid two">
+        <div>
+          <h4>DPR Draft Inputs</h4>
+          <label>Machines / Equipment<input id="equipment" value="5 sewing machines" /></label>
+          <label>Equipment Cost (₹)<input id="equipmentCost" type="number" value="200000" /></label>
+          <label>Monthly Rent (₹)<input id="rent" type="number" value="10000" /></label>
+          <label>Employees<input id="employees" type="number" value="3" /></label>
+          <label>Expected Monthly Sales (₹)<input id="sales" type="number" value="80000" /></label>
+          <button class="primary" id="generateDpr">Generate DPR Draft</button>
+        </div>
+        <div>
+          <h4>Generated DPR Preview</h4>
+          <div id="dprPreview" class="dpr-box">Complete the inputs and generate a structured draft.</div>
+        </div>
+      </div>
+      <div class="compatibility">
+        <h4>Benefit Compatibility</h4>
+        <p id="compatibilityText">Select a scheme match first to view a rule-aware compatibility demo.</p>
+      </div>
+    </section>
+
+    <section class="card trust">
+      <h3>Trust Layer 🔒</h3>
+      <div class="trust-grid">
+        <span>✓ User Consent</span><span>✓ Confidence Scores</span><span>✓ User Verification</span><span>✓ Versioned Scheme Rules</span>
+      </div>
+      <p class="muted">Prototype note: this is a demonstration MVP using sample scheme rules and simulated document intelligence. It does not make official eligibility or sanction decisions.</p>
+    </section>
+  </main>
+
+  <footer>SchemeSetu AI • SIH26092 • INNOVEXA</footer>
+  <script src="app.js"></script>
+</body>
+</html>
