@@ -15,6 +15,100 @@ function show(id){
 }
 steps.forEach(s=>s.addEventListener('click',()=>show(s.dataset.target)));
 
+// ---------------- VOICE-ASSISTED PROFILE CREATION ----------------
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recognition=null;
+const voiceStatus=document.getElementById('voiceStatus');
+const voiceTranscript=document.getElementById('voiceTranscript');
+
+function setSelectValue(id,value){
+ const el=document.getElementById(id);
+ if(!el)return;
+ const option=[...el.options].find(o=>o.value.toLowerCase()===value.toLowerCase()||o.text.toLowerCase()===value.toLowerCase());
+ if(option)el.value=option.value;
+}
+
+function wordsToNumber(text){
+ const t=text.toLowerCase().replace(/,/g,' ');
+ const digit=t.match(/\b\d+(?:\.\d+)?\b/);
+ if(digit)return Number(digit[0]);
+ const map={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10};
+ let base=0;
+ for(const [w,n] of Object.entries(map))if(new RegExp('\\b'+w+'\\b').test(t))base=n;
+ if(/lakh|lac/.test(t))return (base||1)*100000;
+ if(/thousand/.test(t))return (base||1)*1000;
+ return 0;
+}
+
+function fillProfileFromSpeech(text){
+ const lower=text.toLowerCase();
+
+ const nameMatch=text.match(/(?:my name is|i am called|name is)\s+([a-zA-Z ]+?)(?=,|\.|\bi am\b|\bcategory\b|\bfrom\b|\bbusiness\b|$)/i);
+ if(nameMatch)document.getElementById('name').value=nameMatch[1].trim();
+
+ if(/\bfemale\b|\bwoman\b|\bwomen\b/.test(lower))setSelectValue('gender','Female');
+ else if(/\bmale\b|\bman\b/.test(lower))setSelectValue('gender','Male');
+
+ if(/\bsc\b|scheduled caste/.test(lower))setSelectValue('category','SC');
+ else if(/\bst\b|scheduled tribe/.test(lower))setSelectValue('category','ST');
+ else if(/\bobc\b|other backward/.test(lower))setSelectValue('category','OBC');
+ else if(/\bgeneral\b/.test(lower))setSelectValue('category','General');
+
+ if(/tamil nadu/.test(lower))setSelectValue('state','Tamil Nadu');
+ else if(/karnataka/.test(lower))setSelectValue('state','Karnataka');
+ else if(/kerala/.test(lower))setSelectValue('state','Kerala');
+
+ if(/tailor|tailoring|sewing/.test(lower))setSelectValue('business','Tailoring');
+ else if(/food processing|food business/.test(lower))setSelectValue('business','Food Processing');
+ else if(/retail|shop/.test(lower))setSelectValue('business','Retail');
+ else if(/service/.test(lower))setSelectValue('business','Services');
+
+ if(/existing business|already running|existing/.test(lower))setSelectValue('stage','Existing');
+ else if(/new business|start a business|starting/.test(lower))setSelectValue('stage','New');
+
+ const incomeMatch=text.match(/(?:annual income|income)(?: is| of| around)?\s*([^,.]+)/i);
+ if(incomeMatch){const n=wordsToNumber(incomeMatch[1]);if(n)document.getElementById('income').value=n;}
+
+ const fundingMatch=text.match(/(?:funding required|funding|loan required|need)(?: is| of| around)?\s*([^,.]+)/i);
+ if(fundingMatch){const n=wordsToNumber(fundingMatch[1]);if(n)document.getElementById('funding').value=n;}
+
+ voiceStatus.textContent='✓ Voice captured. I filled the fields I could understand. Please verify the profile before matching schemes.';
+}
+
+if(SpeechRecognition){
+ recognition=new SpeechRecognition();
+ recognition.continuous=false;
+ recognition.interimResults=false;
+ recognition.maxAlternatives=1;
+
+ document.getElementById('startVoice').addEventListener('click',()=>{
+   recognition.lang=document.getElementById('voiceLanguage').value;
+   voiceStatus.textContent='🎤 Listening... Speak your profile now.';
+   voiceTranscript.textContent='Listening...';
+   try{recognition.start();}catch(e){}
+ });
+
+ document.getElementById('stopVoice').addEventListener('click',()=>{
+   try{recognition.stop();}catch(e){}
+ });
+
+ recognition.onresult=e=>{
+   const text=e.results[0][0].transcript;
+   voiceTranscript.textContent='You said: '+text;
+   fillProfileFromSpeech(text);
+ };
+ recognition.onerror=e=>{
+   voiceStatus.textContent='Voice error: '+e.error+'. Please allow microphone permission and try again.';
+ };
+ recognition.onend=()=>{
+   if(voiceStatus.textContent.includes('Listening'))voiceStatus.textContent='Listening stopped. Tap the microphone to try again.';
+ };
+}else{
+ document.getElementById('startVoice').disabled=true;
+ document.getElementById('stopVoice').disabled=true;
+ voiceStatus.textContent='Voice recognition is not supported in this browser. Please use Chrome/Edge or fill the form manually.';
+}
+
 function renderSchemes(){
  const cat=document.getElementById('category').value;
  const gender=document.getElementById('gender').value;
@@ -57,7 +151,7 @@ function renderDocs(docs){
 
  document.querySelectorAll('.docfile').forEach(input=>input.addEventListener('change',()=>{
    const doc=input.dataset.doc;
-   const file=input.files && input.files[0];
+   const file=input.files&&input.files[0];
    if(file){
      state.files[doc]=file;
      state.docs[doc]=true;
@@ -77,9 +171,9 @@ function renderDocs(docs){
 
 function normalized(s){return s.toLowerCase().replace(/[^a-z]/g,'').replace(/kh/g,'h').replace(/sh/g,'s');}
 function similarity(a,b){
- a=normalized(a);b=normalized(b); if(!a||!b)return 0;
- const longer=a.length>=b.length?a:b, shorter=a.length>=b.length?b:a;
- let common=0,j=0; for(const ch of longer){const k=shorter.indexOf(ch,j); if(k>=0){common++;j=k+1;}}
+ a=normalized(a);b=normalized(b);if(!a||!b)return 0;
+ const longer=a.length>=b.length?a:b,shorter=a.length>=b.length?b:a;
+ let common=0,j=0;for(const ch of longer){const k=shorter.indexOf(ch,j);if(k>=0){common++;j=k+1;}}
  return Math.round((common/Math.max(a.length,b.length))*100);
 }
 
@@ -93,7 +187,7 @@ document.getElementById('checkName').addEventListener('click',()=>{
 });
 
 function updateReadiness(){
- const vals=Object.values(state.docs); 
+ const vals=Object.values(state.docs);
  const docScore=vals.length?vals.filter(Boolean).length/vals.length*60:0;
  const schemeScore=state.selected?20:0;
  const nameScore=state.nameVerified?5:0;
@@ -106,9 +200,9 @@ document.getElementById('generateDpr').addEventListener('click',()=>{
  const name=document.getElementById('name').value,business=document.getElementById('business').value;
  const funding=Number(document.getElementById('funding').value||0),equipment=document.getElementById('equipment').value;
  const equipmentCost=Number(document.getElementById('equipmentCost').value||0),rent=Number(document.getElementById('rent').value||0),employees=Number(document.getElementById('employees').value||0),sales=Number(document.getElementById('sales').value||0);
- const annualSales=sales*12, annualRent=rent*12;
+ const annualSales=sales*12,annualRent=rent*12;
  const text=`DPR DRAFT — ${business}\n\nApplicant: ${name}\nBusiness Stage: ${document.getElementById('stage').value}\nFunding Required: ₹${funding.toLocaleString('en-IN')}\n\nPROJECT SETUP\nEquipment: ${equipment}\nEquipment Cost: ₹${equipmentCost.toLocaleString('en-IN')}\nEmployees: ${employees}\n\nFINANCIAL SNAPSHOT\nExpected Annual Sales: ₹${annualSales.toLocaleString('en-IN')}\nAnnual Rent: ₹${annualRent.toLocaleString('en-IN')}\n\nNote: This is an editable MVP draft. Financial assumptions must be verified before official use.`;
- const box=document.getElementById('dprPreview'); box.textContent=text; box.dataset.done='1';
+ const box=document.getElementById('dprPreview');box.textContent=text;box.dataset.done='1';
  updateReadiness();
 });
 
