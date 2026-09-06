@@ -4,7 +4,7 @@ const schemes=[
  {name:'NSFDC Entrepreneurship Support',match:83,why:['SC category selected','Entrepreneurship objective matches','Income rule requires official validation'],docs:['Aadhaar','PAN','Community Certificate','Income Certificate','Bank Statement','Project Report'],compatible:['Skill/training support','Eligible finance support']}
 ];
 
-const state={selected:null,docs:{}};
+const state={selected:null,docs:{},files:{},nameVerified:false};
 const steps=[...document.querySelectorAll('.step')];
 const panels=[...document.querySelectorAll('.panel')];
 
@@ -35,17 +35,42 @@ function selectScheme(s){
  show('documents');
 }
 
+function safeId(text){return text.toLowerCase().replace(/[^a-z0-9]+/g,'-');}
+
 function renderDocs(docs){
- const preset={'Aadhaar':true,'PAN':true,'Community Certificate':true,'Income Certificate':false,'Bank Statement':true,'DPR':false,'Business Plan':false,'Project Report':false};
  state.docs={};
- document.getElementById('docChecklist').innerHTML=docs.map((d,i)=>{
-   state.docs[d]=preset[d]??false;
-   return `<div class="doc-item"><label><input class="doccheck" data-doc="${d}" type="checkbox" ${state.docs[d]?'checked':''}/> ${d}</label><span class="${state.docs[d]?'status-ok':'status-miss'}">${state.docs[d]?'Ready':'Missing'}</span></div>`;
+ const list=document.getElementById('docChecklist');
+ list.innerHTML=docs.map(d=>{
+   const uploaded=!!state.files[d];
+   state.docs[d]=uploaded;
+   const id='file-'+safeId(d);
+   const fileName=uploaded?state.files[d].name:'No file selected';
+   return `<div class="doc-item" style="display:block;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px;">
+        <strong>${d}</strong>
+        <span class="${uploaded?'status-ok':'status-miss'}" id="status-${safeId(d)}">${uploaded?'Uploaded':'Missing'}</span>
+      </div>
+      <input class="docfile" id="${id}" data-doc="${d}" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+      <small id="name-${safeId(d)}" style="display:block;margin-top:6px;opacity:.75;">${fileName}</small>
+   </div>`;
  }).join('');
- document.querySelectorAll('.doccheck').forEach(c=>c.addEventListener('change',()=>{
-   state.docs[c.dataset.doc]=c.checked;
-   const span=c.closest('.doc-item').querySelector('span');
-   span.textContent=c.checked?'Ready':'Missing'; span.className=c.checked?'status-ok':'status-miss';
+
+ document.querySelectorAll('.docfile').forEach(input=>input.addEventListener('change',()=>{
+   const doc=input.dataset.doc;
+   const file=input.files && input.files[0];
+   if(file){
+     state.files[doc]=file;
+     state.docs[doc]=true;
+     document.getElementById('status-'+safeId(doc)).textContent='Uploaded';
+     document.getElementById('status-'+safeId(doc)).className='status-ok';
+     document.getElementById('name-'+safeId(doc)).textContent=`✓ ${file.name}`;
+   }else{
+     delete state.files[doc];
+     state.docs[doc]=false;
+     document.getElementById('status-'+safeId(doc)).textContent='Missing';
+     document.getElementById('status-'+safeId(doc)).className='status-miss';
+     document.getElementById('name-'+safeId(doc)).textContent='No file selected';
+   }
    updateReadiness();
  }));
 }
@@ -61,16 +86,19 @@ function similarity(a,b){
 document.getElementById('checkName').addEventListener('click',()=>{
  const a=document.getElementById('primaryName').value,b=document.getElementById('certificateName').value;
  const score=similarity(a,b);
+ state.nameVerified=score>=75;
  const msg=score>=75?`⚠ Possible variation detected (${score}% similarity). Please verify before submission.`:`⚠ Low similarity (${score}%). Manual verification is recommended.`;
  document.getElementById('nameResult').textContent=msg;
- updateReadiness(score>=75?10:0);
+ updateReadiness();
 });
 
-function updateReadiness(extra=0){
- const vals=Object.values(state.docs); const docScore=vals.length?vals.filter(Boolean).length/vals.length*60:0;
- const schemeScore=state.selected?25:0;
+function updateReadiness(){
+ const vals=Object.values(state.docs); 
+ const docScore=vals.length?vals.filter(Boolean).length/vals.length*60:0;
+ const schemeScore=state.selected?20:0;
+ const nameScore=state.nameVerified?5:0;
  const dprScore=document.getElementById('dprPreview').dataset.done==='1'?15:0;
- const total=Math.min(100,Math.round(docScore+schemeScore+dprScore+extra));
+ const total=Math.min(100,Math.round(docScore+schemeScore+nameScore+dprScore));
  document.getElementById('heroScore').textContent=total+'%';
 }
 
@@ -81,9 +109,6 @@ document.getElementById('generateDpr').addEventListener('click',()=>{
  const annualSales=sales*12, annualRent=rent*12;
  const text=`DPR DRAFT — ${business}\n\nApplicant: ${name}\nBusiness Stage: ${document.getElementById('stage').value}\nFunding Required: ₹${funding.toLocaleString('en-IN')}\n\nPROJECT SETUP\nEquipment: ${equipment}\nEquipment Cost: ₹${equipmentCost.toLocaleString('en-IN')}\nEmployees: ${employees}\n\nFINANCIAL SNAPSHOT\nExpected Annual Sales: ₹${annualSales.toLocaleString('en-IN')}\nAnnual Rent: ₹${annualRent.toLocaleString('en-IN')}\n\nNote: This is an editable MVP draft. Financial assumptions must be verified before official use.`;
  const box=document.getElementById('dprPreview'); box.textContent=text; box.dataset.done='1';
- if(state.docs['DPR']!==undefined) state.docs['DPR']=true;
- if(state.docs['Project Report']!==undefined) state.docs['Project Report']=true;
- renderDocs(state.selected?state.selected.docs:[]);
  updateReadiness();
 });
 
