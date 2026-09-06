@@ -38,8 +38,27 @@
     <section id="profile" class="panel card active-panel">
       <div class="section-head">
         <div><span class="eyebrow">Stage 1</span><h3>Profile Intelligence</h3></div>
-        <span class="pill">Voice/Form Ready</span>
+        <span class="pill">Voice + Form Ready</span>
       </div>
+
+      <div class="info-box">
+        <strong>Voice-assisted profile creation:</strong> choose a language, tap the microphone and speak your details naturally. Example: “My name is Lakshmi Raj, I am female, SC category, from Tamil Nadu, tailoring business, annual income two lakh, funding required five lakh.”
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0;">
+        <label style="min-width:180px;">Voice Language
+          <select id="voiceLanguage">
+            <option value="en-IN">English (India)</option>
+            <option value="ta-IN">Tamil</option>
+            <option value="hi-IN">Hindi</option>
+          </select>
+        </label>
+        <button class="secondary" id="startVoice" type="button">🎤 Start Voice Assistant</button>
+        <button class="secondary" id="stopVoice" type="button">⏹ Stop</button>
+      </div>
+      <div id="voiceStatus" class="result-box">Voice assistant ready. Click the microphone and allow browser microphone access.</div>
+      <div id="voiceTranscript" class="dpr-box" style="margin-bottom:16px;">Your spoken text will appear here.</div>
+
       <div class="grid two">
         <label>Name<input id="name" value="Lakshmi Raj" /></label>
         <label>Gender<select id="gender"><option>Female</option><option>Male</option><option>Other</option></select></label>
@@ -118,7 +137,7 @@
       <div class="trust-grid">
         <span>✓ User Consent</span><span>✓ Confidence Scores</span><span>✓ User Verification</span><span>✓ Versioned Scheme Rules</span>
       </div>
-      <p class="muted">Prototype note: uploaded files are only handled inside the browser in this frontend MVP and are not sent to a server. Real OCR and secure backend storage are part of the next integration phase.</p>
+      <p class="muted">Prototype note: voice recognition uses the browser's speech-recognition capability when available. Uploaded files are handled inside the browser in this frontend MVP and are not sent to a server. Real OCR and secure backend storage are part of the next integration phase.</p>
     </section>
   </main>
 
